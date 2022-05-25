@@ -1,0 +1,37 @@
+---
+# This is the Base Compose template. It contains the reusable components
+# for running DMS Lite
+version: "3.3"
+services:
+  client:
+    build:
+      dockerfile: Dockerfile
+      context: ../DoowanStats-Client
+    image: doowanstats-client
+    restart: "always"
+    depends_on:
+      - server
+    ports:
+      - "3000:80"
+    links:
+      - server
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: ../DoowanStats-Server
+    image: doowanstats-server
+    restart: "always"
+    depends_on:
+      - redis
+    ports:
+      - "5000:5000"
+    links:
+      - redis
+    env_file:
+      - ../DoowanStats-Server/.env.docker
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis:7.0.0-alpine
+    ports:
+      - "6379:6379"
